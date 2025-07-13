@@ -1074,7 +1074,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                                 )}
                               </div>
                               <p className="text-xs text-gray-500 mt-1">
-                                Assign campaign to a specific agent group
+                                Select one of the groups that were configured in the IVR
                               </p>
                             </div>
 
