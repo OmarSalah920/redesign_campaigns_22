@@ -949,35 +949,45 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                         </div>
                         
                         {/* Toggle Button */}
-                        <button
-                          type="button"
-                          onClick={() => formData.ivr && toggleAdvancedConfig()}
-                          className={`
-                            relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                            ${!formData.ivr 
-                              ? 'bg-gray-200 cursor-not-allowed' 
-                              : isAdvancedConfigExpanded 
-                                ? 'bg-blue-600' 
-                                : 'bg-gray-300'
-                            }
-                          `}
-                          disabled={!formData.ivr}
-                          role="switch"
-                          aria-checked={isAdvancedConfigExpanded}
-                          aria-label={!formData.ivr ? "Select an IVR to enable concurrency auto-scaling" : "Toggle concurrency auto-scaling"}
-                        >
-                          <span
+                        {!formData.ivr ? (
+                          <div className="relative group">
+                            <button
+                              type="button"
+                              className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 cursor-not-allowed opacity-50 transition-colors duration-200 ease-in-out focus:outline-none"
+                              disabled={true}
+                              role="switch"
+                              aria-checked={false}
+                              aria-label="Select an IVR to enable concurrency auto-scaling"
+                            >
+                              <span className="inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out translate-x-1" />
+                            </button>
+                            
+                            {/* Tooltip */}
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                              IVR selection required: Please select an IVR with a configured group assignment to enable the automatic concurrency settings.
+                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                            </div>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={toggleAdvancedConfig}
                             className={`
-                              inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out
-                              ${!formData.ivr 
-                                ? 'translate-x-1' 
-                                : isAdvancedConfigExpanded 
-                                  ? 'translate-x-6' 
-                                  : 'translate-x-1'
-                              }
+                              relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                              ${isAdvancedConfigExpanded ? 'bg-blue-600' : 'bg-gray-300'}
                             `}
-                          />
-                        </button>
+                            role="switch"
+                            aria-checked={isAdvancedConfigExpanded}
+                            aria-label="Toggle concurrency auto-scaling"
+                          >
+                            <span
+                              className={`
+                                inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out
+                                ${isAdvancedConfigExpanded ? 'translate-x-6' : 'translate-x-1'}
+                              `}
+                            />
+                          </button>
+                        )}
                       </div>
                       
                      
