@@ -943,7 +943,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                               Automatic Concurrency Settings <span className="text-gray-500 font-normal">(optional)</span>
                             </h4>
                             <p className="text-xs text-gray-600 mt-1">
-                              Automate the number of concurrent outbound calls based on the count of online agents, Click here to learn more about how it works!
+                              Automate the number of concurrent outbound calls based on the count of online agents.<br/> Click here to learn more about how it works!
                             </p>
                           </div>
                         </div>
@@ -1001,7 +1001,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                                   <div className="relative ml-2 group">
                                     <Info className="w-4 h-4 text-gray-400 cursor-help" />
                                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
-                                      Select the agent group for which the outbound concurrency will be <></> automatically calculated based on the number of its online agents.
+                                      Select the agent group for which the outbound concurrency will be automatically calculated based on the number of its online agents.
                                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                                     </div>
                                   </div>
