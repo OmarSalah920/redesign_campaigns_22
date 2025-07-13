@@ -985,7 +985,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                         <div className="flex items-start space-x-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                           <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
                           <p className="text-sm text-amber-800">
-                            <span className="font-medium">IVR selection required:</span> Please select an IVR with a configured group assignment in the configuration above to enable the automatic concurrency settings.
+                            <span className="font-medium">IVR selection required:</span> Please select an IVR with a configured group assignment to enable the automatic concurrency settings.
                           </p>
                         </div>
                       )}
