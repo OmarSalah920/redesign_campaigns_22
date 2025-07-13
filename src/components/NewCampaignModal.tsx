@@ -887,7 +887,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                         {getError('concurrency') && <p id="concurrency-error" className="text-red-500 text-sm mt-1">{getError('concurrency')}</p>}
                         {isAdvancedConcurrencyEnabled ? (
                           <p className="text-xs text-amber-600 mt-1">
-                            <span className="font-medium">Auto-concurrency:</span> Concurrency is automatically disabled when Concurrency advanced Settings are enabled
+                            <span className="font-medium"></span> Manual concurrency is disabled when the Automatic Concurrency Setting is enabled
                           </p>
                         ) : (
                           <p className="text-xs text-gray-500 mt-1">
@@ -940,7 +940,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                           <Settings className="w-5 h-5 text-gray-600" />
                           <div>
                             <h4 className="text-sm font-medium text-gray-900">
-                              Advanced Concurrency Settings <span className="text-gray-500 font-normal">(optional)</span>
+                              Automatic Concurrency Settings <span className="text-gray-500 font-normal">(optional)</span>
                             </h4>
                             <p className="text-xs text-gray-600 mt-1">
                               Automate the number of concurrent outbound calls based on the count of online agents
