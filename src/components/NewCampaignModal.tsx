@@ -406,7 +406,6 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
   const [selectedTimezone, setSelectedTimezone] = useState<string>(getUserTimezone());
   const [isTimezoneDropdownOpen, setIsTimezoneDropdownOpen] = useState(false);
   const [isPhoneNumberDropdownOpen, setIsPhoneNumberDropdownOpen] = useState(false);
-  const [showIvrTooltip, setShowIvrTooltip] = useState(false);
   const [isGroupDropdownOpen, setIsGroupDropdownOpen] = useState(false);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const [isAdvancedConfigExpanded, setIsAdvancedConfigExpanded] = useState(false);
