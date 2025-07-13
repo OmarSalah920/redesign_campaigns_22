@@ -1072,46 +1072,48 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                                     })}
                                   </div>
                                 )}
-                              </div>
-                              <p className="text-xs text-gray-500 mt-1">
-                                Assign campaign to a specific agent group
-                              </p>
-                            </div>
-
-                            {/* Concurrent Calls per Online Agent */}
-                            <div>
-                              <label htmlFor="concurrent-calls-per-agent" className="block text-sm font-medium text-gray-700 mb-2">
-                                Concurrent Calls per Online Agent
-                              </label>
-                              <input
-                                id="concurrent-calls-per-agent"
-                                type="number"
-                                min="1"
-                                max="50"
-                                value={formData.concurrentCallsPerAgent}
-                                onChange={(e) => handleFormDataChange('concurrentCallsPerAgent', parseInt(e.target.value) || 1)}
-                                className="form-input h-12"
-                                aria-describedby={getError('concurrentCallsPerAgent') ? "concurrent-calls-per-agent-error" : undefined}
-                              />
-                              {getError('concurrentCallsPerAgent') && (
-                                <p id="concurrent-calls-per-agent-error" className="text-red-500 text-sm mt-1">
-                                  {getError('concurrentCallsPerAgent')}
-                                </p>
-                              )}
-                              <p className="text-xs text-gray-500 mt-1">
-                                Maximum simultaneous calls per online agent
-                              </p>
-                            </div>
+                <>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-start space-x-3">
+                      <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-blue-900 mb-2 flex items-center">
+                          <span>Understanding Automatic Concurrency</span>
+                        </h4>
+                        <div className="text-sm text-blue-800 space-y-3">
+                          <p>
+                            This feature automatically adjusts your campaign's concurrent outbound calls based on real-time agent availability. The system calculates concurrent calls using this formula:
+                          </p>
+                          
+                          <div className="bg-blue-100 border border-blue-300 rounded-md p-3 font-mono text-center">
+                            <strong>Total Concurrent Calls = Number of Online Agents × Concurrent Calls per Online Agent</strong>
+                          </div>
+                          
+                          <div>
+                            <p className="font-medium mb-2">For example:</p>
+                            <ul className="space-y-1 ml-4">
+                              <li>• If 5 agents are online and you set 3 concurrent calls per agent:<br />
+                                <span className="ml-2 font-mono">5 agents × 3 calls = 15 total concurrent calls</span>
+                              </li>
+                              <li>• If agent availability changes to 3 agents:<br />
+                                <span className="ml-2 font-mono">3 agents × 3 calls = 9 total concurrent calls</span>
+                              </li>
+                            </ul>
+                          </div>
+                          
+                          <div className="bg-blue-100 border-l-4 border-blue-400 p-3 rounded-r">
+                            <p className="font-medium text-blue-900">Note:</p>
+                            <p>The system dynamically updates concurrent calls as agents are online, offline, or away, ensuring optimal call distribution and preventing queue overload.</p>
                           </div>
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
-                </div>
-                
-                <p className="text-sm text-blue-600 font-medium mb-4">
-                  Click Here to learn more about how it works!
-                </p>
+                  
+                  <p className="text-sm text-blue-600 font-medium mb-4">
+                    Click Here to learn more about how it works!
+                  </p>
+                </>
               )}
 
               {/* Step 2: Schedule Configuration */}
