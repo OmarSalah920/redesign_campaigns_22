@@ -963,7 +963,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                             </button>
                             
                             {/* Tooltip */}
-                            <div className="absolute w-60 bottom-full left-full transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-normal break-words z-10">
+                            <div className="absolute w-60 bottom-full left-full transform -translate-x-[calc(100%+10px)] mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-normal break-words z-10">
                               IVR selection required: Please select an IVR with a configured group assignment to enable the automatic concurrency settings.
                               <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                             </div>
