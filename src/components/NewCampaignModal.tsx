@@ -873,7 +873,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                           onChange={(e) => {
                             // Only allow changes if advanced concurrency is not enabled
                             if (!isAdvancedConcurrencyEnabled) {
-                              handleFormDataChange('concurrency', parseInt(e.target.value) || 1);
+                              handleFormDataChange('concurrency', parseInt(e.target.value) || 0);
                             }
                           }}
                           className={`form-input h-12 ${
