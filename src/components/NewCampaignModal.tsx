@@ -943,7 +943,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                               Automatic Concurrency Settings <span className="text-gray-500 font-normal">(optional)</span>
                             </h4>
                             <p className="text-xs text-gray-600 mt-1">
-                              Automate the number of concurrent outbound calls based on the count of online agents.<br/> <a href="https://maqsam.com/">Click here to learn more about how it works! </a>
+                              Automate the number of concurrent outbound calls based on the count of online agents.<br/> </p>  <p className="text-xs text-blue-600 mt-1">  <a href="https://maqsam.com/">Click here to learn more about how it works! </a>
                             </p>
                           </div>
                         </div>
