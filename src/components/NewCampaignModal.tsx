@@ -1098,7 +1098,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                                 </p>
                               )}
                               <p className="text-xs text-gray-500 mt-1">
-                                Maximum simultaneous calls per online agent
+                               
                               </p>
                             </div>
                           </div>
