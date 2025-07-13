@@ -981,15 +981,53 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                         </button>
                       </div>
                       
-                      {/* IVR Required Message */}
-                      {!formData.ivr && (
-                        <div className="flex items-start space-x-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                          <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                          <p className="text-sm text-amber-800">
-                            <span className="font-medium">IVR selection required:</span> Please select an IVR with a configured group assignment to enable the automatic concurrency settings.
-                          </p>
+                      {/* Automatic Concurrency Toggle with Tooltip */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <label className="text-sm font-medium text-gray-700">
+                            Enable Automatic Concurrency
+                          </label>
+                          <div className="relative group">
+                            <Info className="w-4 h-4 text-gray-400 cursor-help" />
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                              Automatically adjusts concurrent calls based on agent availability
+                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                            </div>
+                          </div>
                         </div>
-                      )}
+                        
+                        {/* Toggle Button with Conditional Tooltip */}
+                        {!formData.ivr ? (
+                          <div className="relative group">
+                            <button
+                              type="button"
+                              disabled
+                              className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 cursor-not-allowed opacity-50"
+                            >
+                              <span className="inline-block h-4 w-4 transform rounded-full bg-white shadow transition translate-x-1" />
+                            </button>
+                            {/* Tooltip for disabled state */}
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                              Please select an IVR with a configured group assignment to enable automatic concurrency
+                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                            </div>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setFormData(prev => ({ ...prev, automaticConcurrency: !prev.automaticConcurrency }))}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ${
+                              formData.automaticConcurrency ? 'bg-blue-600' : 'bg-gray-200'
+                            }`}
+                          >
+                            <span
+                              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ${
+                                formData.automaticConcurrency ? 'translate-x-6' : 'translate-x-1'
+                              }`}
+                            />
+                          </button>
+                        )}
+                      </div>
 
                       {isAdvancedConfigExpanded && formData.ivr && (
                         <div className="px-6 pb-6 border-t border-gray-200 bg-gray-50">
