@@ -793,55 +793,6 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
             <div className="space-y-6">
               <h4 className="text-lg font-medium text-gray-900">Advanced Concurrency Settings</h4>
               
-              {/* Understanding Automatic Concurrency Information Box */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Info className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h5 className="text-base font-semibold text-blue-900 mb-3">
-                      Understanding Automatic Concurrency
-                    </h5>
-                    <div className="text-sm text-blue-800 space-y-3">
-                      <p>
-                        This feature automatically adjusts your campaign's concurrent outbound calls based on real-time agent availability. The system calculates concurrent calls using this formula:
-                      </p>
-                      
-                      <div className="bg-blue-100 border border-blue-300 rounded-lg p-4 font-mono text-center">
-                        <strong>Total Concurrent Calls = Number of Online Agents × Concurrent Calls per Online Agent</strong>
-                      </div>
-                      
-                      <div>
-                        <p className="font-medium mb-2">For example:</p>
-                        <ul className="space-y-2 ml-4">
-                          <li className="flex items-start">
-                            <span className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                            <span>
-                              If <strong>5 agents</strong> are online and you set <strong>3 concurrent calls per agent</strong>:<br />
-                              <span className="font-mono bg-blue-100 px-2 py-1 rounded text-xs">5 agents × 3 calls = 15 total concurrent calls</span>
-                            </span>
-                          </li>
-                          <li className="flex items-start">
-                            <span className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                            <span>
-                              If agent availability changes to <strong>3 agents</strong>:<br />
-                              <span className="font-mono bg-blue-100 px-2 py-1 rounded text-xs">3 agents × 3 calls = 9 total concurrent calls</span>
-                            </span>
-                          </li>
-                        </ul>
-                      </div>
-                      
-                      <div className="bg-blue-100 border border-blue-300 rounded-lg p-3">
-                        <p className="text-xs">
-                          <strong>Note:</strong> The system dynamically updates concurrent calls as agents are online, offline, or away, ensuring optimal call distribution and preventing queue overload.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Group Name */}
                 <div>
