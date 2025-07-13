@@ -667,15 +667,6 @@ export const CampaignsTable: React.FC = () => {
                     {renderSortIcon('audienceCount')}
                   </button>
                 </th>
-                <th className="table-header-cell whitespace-nowrap" style={{ width: '120px' }}>
-                  <button
-                    onClick={() => handleSort('ongoingCalls')}
-                    className="flex items-center space-x-1 hover:text-gray-800 transition-colors duration-200 whitespace-nowrap"
-                  >
-                    <span>Ongoing calls</span>
-                    {renderSortIcon('ongoingCalls')}
-                  </button>
-                </th>
                 <th className="table-header-cell whitespace-nowrap" style={{ width: '130px' }}>
                   <button
                     onClick={() => handleSort('responseRate')}
@@ -736,20 +727,6 @@ export const CampaignsTable: React.FC = () => {
                       lineHeight: 1.4
                     }}>
                       {formatAudienceCount(campaign.audienceCount)}
-                    </span>
-                  </td>
-                  <td className="table-cell">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full font-medium border ${
-                      campaign.ongoingCalls > 0 
-                        ? 'bg-emerald-100 text-emerald-800 border-emerald-200' 
-                        : 'bg-gray-100 text-gray-800 border-gray-200'
-                    }`} style={{
-                      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                      fontSize: '11.9px',
-                      fontWeight: 400,
-                      lineHeight: 1.4
-                    }}>
-                      {campaign.ongoingCalls}
                     </span>
                   </td>
                   <td className="table-cell">
