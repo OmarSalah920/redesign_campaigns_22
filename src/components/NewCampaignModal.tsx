@@ -939,47 +939,9 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                         <div className="flex items-center space-x-3">
                           <Settings className="w-5 h-5 text-gray-600" />
                           <div>
-                            <div className="flex items-center space-x-2">
-                              <h4 className="text-sm font-medium text-gray-900">
-                                Automatic Concurrency Settings <span className="text-gray-500 font-normal">(optional)</span>
-                              </h4>
-                              <div className="relative group">
-                                <Info className="w-4 h-4 text-gray-400 cursor-help" />
-                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-96 bg-gray-900 text-white text-sm rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
-                                  <div className="p-4">
-                                    <div className="font-semibold text-white mb-3">Understanding Automatic Concurrency</div>
-                                    <div className="space-y-3 text-gray-200">
-                                      <p>
-                                        This feature automatically adjusts your campaign's concurrent outbound calls based on real-time agent availability. The system calculates concurrent calls using this formula:
-                                      </p>
-                                      
-                                      <div className="bg-gray-800 rounded p-3 border border-gray-700">
-                                        <div className="font-mono text-center text-blue-300">
-                                          Total Concurrent Calls = Number of Online Agents × Concurrent Calls per Online Agent
-                                        </div>
-                                      </div>
-                                      
-                                      <div>
-                                        <p className="font-medium mb-2">For example:</p>
-                                        <ul className="space-y-1 text-sm">
-                                          <li>• If 5 agents are online and you set 3 concurrent calls per agent:</li>
-                                          <li className="ml-4 font-mono text-blue-300">5 agents × 3 calls = 15 total concurrent calls</li>
-                                          <li>• If agent availability changes to 3 agents:</li>
-                                          <li className="ml-4 font-mono text-blue-300">3 agents × 3 calls = 9 total concurrent calls</li>
-                                        </ul>
-                                      </div>
-                                      
-                                      <div className="pt-2 border-t border-gray-700">
-                                        <p className="text-xs">
-                                          <strong>Note:</strong> The system dynamically updates concurrent calls as agents are online, offline, or away, ensuring optimal call distribution and preventing queue overload.
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                                </div>
-                              </div>
-                            </div>
+                            <h4 className="text-sm font-medium text-gray-900">
+                              Automatic Concurrency Settings <span className="text-gray-500 font-normal">(optional)</span>
+                            </h4>
                             <p className="text-xs text-gray-600 mt-1">
                               Automate the number of concurrent outbound calls based on the count of online agents
                             </p>
@@ -1112,7 +1074,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                                 )}
                               </div>
                               <p className="text-xs text-gray-500 mt-1">
-                                Select one of the predefined groups from the selected IVR
+                                Assign campaign to a specific agent group
                               </p>
                             </div>
 
@@ -1137,7 +1099,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                                 </p>
                               )}
                               <p className="text-xs text-gray-500 mt-1">
-                                
+                                Maximum simultaneous calls per online agent
                               </p>
                             </div>
                           </div>
