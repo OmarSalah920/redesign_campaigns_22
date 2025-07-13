@@ -1108,10 +1108,6 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                     </div>
                   </div>
                 </div>
-                
-                <p className="text-sm text-blue-600 font-medium mb-4">
-                  Click Here to learn more about how it works!
-                </p>
               )}
 
               {/* Step 2: Schedule Configuration */}
