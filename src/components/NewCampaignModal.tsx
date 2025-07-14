@@ -874,7 +874,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                           onChange={(e) => {
                             // Only allow changes if advanced concurrency is not enabled
                             if (!isAdvancedConcurrencyEnabled) {
-                              handleFormDataChange('concurrency', parseInt(e.target.value) || 1);
+                              handleFormDataChange('concurrency', parseInt(e.target.value) || 0);
                             }
                           }}
                           className={`form-input h-12 ${
@@ -911,7 +911,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                           min="1"
                           max="10"
                           value={formData.maxTries}
-                          onChange={(e) => handleFormDataChange('maxTries', parseInt(e.target.value) || 0)}
+                          onChange={(e) => handleFormDataChange('maxTries', parseInt(e.target.value) || 1)}
                           className="form-input h-12"
                           aria-describedby={getError('maxTries') ? "max-tries-error" : undefined}
                         />
