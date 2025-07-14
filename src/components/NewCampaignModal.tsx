@@ -868,7 +868,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                         <input
                           id="concurrency"
                           type="number"
-                          min="1"
+                          min="0"
                           max="100"
                           value={formData.concurrency}
                           onChange={(e) => {
