@@ -599,10 +599,10 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
     setIsAdvancedConfigExpanded(prev => {
       const newExpanded = !prev;
       
-      // When toggling ON: enable advanced concurrency and set concurrency to 1
+      // When toggling ON: enable advanced concurrency and set concurrency to 0
       if (newExpanded) {
         setIsAdvancedConcurrencyEnabled(true);
-        handleFormDataChange('concurrency', 1);
+        handleFormDataChange('concurrency', 0);
       } else {
         // When toggling OFF: disable advanced concurrency
         setIsAdvancedConcurrencyEnabled(false);
@@ -615,9 +615,9 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
   // Effect to handle concurrency field behavior when advanced settings are enabled
   useEffect(() => {
     if (isAdvancedConcurrencyEnabled && isAdvancedConfigExpanded) {
-      // Maintain concurrency at 1 when advanced settings are ON
-      if (formData.concurrency !== 1) {
-        handleFormDataChange('concurrency', 1);
+      // Set concurrency to 0 when advanced settings are ON
+      if (formData.concurrency !== 0) {
+        handleFormDataChange('concurrency', 0);
       }
     }
   }, [isAdvancedConcurrencyEnabled, isAdvancedConfigExpanded, formData.concurrency, handleFormDataChange]);
