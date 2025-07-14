@@ -911,7 +911,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                           min="1"
                           max="10"
                           value={formData.maxTries}
-                          onChange={(e) => handleFormDataChange('maxTries', parseInt(e.target.value) || 1)}
+                          onChange={(e) => handleFormDataChange('maxTries', parseInt(e.target.value) || 0)}
                           className="form-input h-12"
                           aria-describedby={getError('maxTries') ? "max-tries-error" : undefined}
                         />
