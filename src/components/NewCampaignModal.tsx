@@ -450,7 +450,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
       }
 
       const concurrencyNum = Number(formData.concurrency);
-      if (concurrencyNum < 1 || concurrencyNum > 100) {
+      if (concurrencyNum < 0 || concurrencyNum > 100) {
         newErrors.concurrency = 'Concurrency must be between 1 and 100';
       }
 
