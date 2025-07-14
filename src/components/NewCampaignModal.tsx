@@ -484,9 +484,8 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
         }
       }
 
-      if (!formData.endDate) {
-        newErrors.endDate = 'End date is required';
-      } else if (formData.startDate) {
+      // End date is now optional, but if provided, it must be valid
+      if (formData.endDate && formData.startDate) {
         if (formData.endDate <= formData.startDate) {
           newErrors.endDate = 'End date must be after start date';
         } else {
@@ -624,7 +623,9 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
   }, [isAdvancedConcurrencyEnabled, isAdvancedConfigExpanded, formData.concurrency, handleFormDataChange]);
   // Effects
   useEffect(() => {
-    if (formData.startDate && formData.endDate) {
+    if (formData.startDate) {
+      // If end date is not provided, use start date + 1 year for schedule calculation
+      const endDateForCalculation = formData.endDate || addOneYear(formData.startDate);
       const daysInRange = getDaysInDateRange(formData.startDate, formData.endDate);
       
       setFormData(prev => ({
@@ -1145,8 +1146,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                       onChange={(value) => handleFormDataChange('endDate', value)}
                       label="End Date"
                       error={getError('endDate')}
-                      helperText="Campaign will end on this date (max 1 year duration)"
-                      required
+                      helperText="Campaign will end on this date (optional, max 1 year duration)"
                       minDate={formData.startDate || getTodayDate()}
                       maxDate={formData.startDate ? addOneYear(formData.startDate) : undefined}
                     />
@@ -1215,7 +1215,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                     
                     <div className="bg-gray-50 rounded-lg border border-gray-200 p-6">
                       {/* Date Range Info */}
-                      {formData.startDate && formData.endDate && (
+                      {formData.startDate && (
                         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                           <div className="flex items-start space-x-2">
                             <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
@@ -1231,18 +1231,27 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                                     year: 'numeric'
                                   })}
                                 </span>
-                                {' '}to{' '}
-                                <span className="font-medium">
-                                  {new Date(formData.endDate + 'T00:00:00').toLocaleDateString('en-US', {
-                                    weekday: 'long',
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric'
-                                  })}
-                                </span>
+                                {formData.endDate ? (
+                                  <>
+                                    {' '}to{' '}
+                                    <span className="font-medium">
+                                      {new Date(formData.endDate + 'T00:00:00').toLocaleDateString('en-US', {
+                                        weekday: 'long',
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric'
+                                      })}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="text-blue-600"> (no end date specified)</span>
+                                )}
                               </p>
                               <p className="text-xs text-blue-600 mt-1">
-                                Only weekdays that occur within this range are shown below.
+                                {formData.endDate 
+                                  ? 'Only weekdays that occur within this range are shown below.'
+                                  : 'All weekdays are available since no end date is specified.'
+                                }
                               </p>
                             </div>
                           </div>
@@ -1316,7 +1325,10 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                       
                       {/* Show message when no days are available */}
                       {(() => {
-                        const filteredWeekdays = getFilteredWeekdays(formData.startDate, formData.endDate);
+                        // When no end date is specified, show all weekdays
+                        const filteredWeekdays = formData.startDate 
+                          ? (formData.endDate ? getFilteredWeekdays(formData.startDate, formData.endDate) : WEEKDAYS)
+                          : [];
                         
                         if (filteredWeekdays.length === 0) {
                           return (
@@ -1325,15 +1337,15 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                                 <Calendar className="w-12 h-12 text-gray-400" />
                                 <div className="text-gray-600">
                                   <p className="font-medium">
-                                    {formData.startDate && formData.endDate 
-                                      ? 'No weekdays available' 
+                                    {formData.startDate 
+                                      ? 'No weekdays available'
                                       : 'Select campaign dates'
                                     }
                                   </p>
                                   <p className="text-sm text-gray-500 mt-1">
-                                    {formData.startDate && formData.endDate 
-                                      ? 'The selected date range does not contain any complete weekdays. Please adjust your start and end dates.'
-                                      : 'Choose start and end dates above to configure your weekly schedule.'
+                                    {formData.startDate 
+                                      ? 'The selected date range does not contain any complete weekdays. Please adjust your dates.'
+                                      : 'Choose a start date above to configure your weekly schedule.'
                                     }
                                   </p>
                                 </div>
@@ -1349,10 +1361,12 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                     <div className="flex items-start space-x-2">
                       <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
                       <p className="text-xs text-gray-600">
-                        {formData.startDate && formData.endDate ? (
-                          'Only weekdays that occur within your selected campaign date range are displayed. You can customize the time slots for each available day.'
+                        {formData.startDate ? (
+                          formData.endDate 
+                            ? 'Only weekdays that occur within your selected campaign date range are displayed. You can customize the time slots for each available day.'
+                            : 'All weekdays are available since no end date is specified. You can customize the time slots for each day.'
                         ) : (
-                          'Select campaign start and end dates above to see available weekdays. You can then customize the time slots for each day.'
+                          'Select a campaign start date above to see available weekdays. You can then customize the time slots for each day.'
                         )}
                       </p>
                     </div>
