@@ -71,8 +71,7 @@ export const CampaignsHeader: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-heading-1">Campaigns</h1>
-          <p className="text-body-small mt-2">Maximizing outreach with automated outbound campaign calls with IVR and agent routing and a configurable number of retries for unanswered contacts.
-</p>
+          <p className="text-body-small mt-2">Manage and monitor your calling campaigns</p>
         </div>
         
         <div className="flex items-center space-x-3">
