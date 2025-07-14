@@ -617,40 +617,8 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
     if (isAdvancedConcurrencyEnabled && isAdvancedConfigExpanded) {
       // Set concurrency to 0 when advanced settings are ON
       if (formData.concurrency !== 0) {
-        handleFormDataChange('concurrency', 0);
-      }
-    }
-  }, [isAdvancedConcurrencyEnabled, isAdvancedConfigExpanded, formData.concurrency, handleFormDataChange]);
-  // Effects
-  useEffect(() => {
-    if (formData.startDate) {
-      // If end date is not provided, use start date + 1 year for schedule calculation
-      const endDateForCalculation = formData.endDate || addOneYear(formData.startDate);
-      const daysInRange = getDaysInDateRange(formData.startDate, formData.endDate);
-      
-      setFormData(prev => ({
-        ...prev,
-        schedule: WEEKDAYS.reduce((acc, day) => {
-          const shouldBeEnabled = daysInRange.has(day.dayIndex);
-          return {
-            ...acc,
-            [day.key]: {
-              ...prev.schedule[day.key],
-              enabled: shouldBeEnabled
-            }
-          };
-        }, {})
-      }));
-    } else {
-      // Reset schedule when dates are cleared
-      setFormData(prev => ({
-        ...prev,
-        schedule: WEEKDAYS.reduce((acc, day) => ({
-          ...acc,
-          [day.key]: { enabled: false, startTime: '09:00', endTime: '17:00' }
-        }), {})
-      }));
-    }
+    // Always show all weekdays regardless of date range
+    setAvailableWeekdays(WEEKDAYS);
   }, [formData.startDate, formData.endDate]);
 
   useEffect(() => {
@@ -1353,21 +1321,10 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                             </div>
                           );
                         }
-                        
-                        return null;
-                      })()}
-                    
-                    {getError('schedule') && <p className="text-red-500 text-sm">{getError('schedule')}</p>}
-                    <div className="flex items-start space-x-2">
-                      <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                      <p className="text-xs text-gray-600">
-                        {formData.startDate ? (
-                          formData.endDate 
-                            ? 'Only weekdays that occur within your selected campaign date range are displayed. You can customize the time slots for each available day.'
-                            : 'All weekdays are available since no end date is specified. You can customize the time slots for each day.'
-                        ) : (
-                          'Select a campaign start date above to see available weekdays. You can then customize the time slots for each day.'
-                        )}
+                      <p className="font-medium mb-1">Weekly Schedule Configuration</p>
+                      <p>
+                        Select the days and times when your campaign should be active. 
+                        The campaign will only make calls during the specified time slots.
                       </p>
                     </div>
                   </div>
