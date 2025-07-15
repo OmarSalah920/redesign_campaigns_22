@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Calendar, Clock, Phone, Globe, ChevronDown, ChevronUp, Info, Workflow } from 'lucide-react';
 import { X, Calendar, Clock, Phone, Globe, ChevronDown, ChevronUp, Info, Workflow, Settings } from 'lucide-react';
 import { TimePicker } from './TimePicker';
 
