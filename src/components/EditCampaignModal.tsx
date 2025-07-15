@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Calendar, Clock, Phone, Globe, ChevronDown, ChevronUp, Info, Workflow } from 'lucide-react';
+import { X, Calendar, Clock, Phone, Globe, ChevronDown, ChevronUp, Info, Workflow, Settings } from 'lucide-react';
 import { TimePicker } from './TimePicker';
 
 interface Campaign {
@@ -17,6 +18,10 @@ interface Campaign {
   timezone?: string;
   retryInterval?: string;
   concurrency?: number;
+  totalCalls?: number;
+  answeredCalls?: number;
+  groupName?: string;
+  concurrentCallsPerAgent?: number;
 }
 
 interface EditCampaignModalProps {
@@ -41,6 +46,13 @@ interface PhoneNumber {
   status: 'active' | 'inactive' | 'unverified';
 }
 
+interface Group {
+  id: string;
+  name: string;
+  agentCount: number;
+  status: 'active' | 'inactive';
+}
+
 interface FormData {
   name: string;
   ivr: string;
@@ -52,6 +64,8 @@ interface FormData {
   maxTries: number;
   retryInterval: string;
   concurrency: number;
+  groupName: string;
+  concurrentCallsPerAgent: number;
 }
 
 const WEEKDAYS = [
@@ -124,6 +138,14 @@ const PHONE_NUMBERS: PhoneNumber[] = [
     flag: '🇬🇧',
     status: 'active'
   }
+];
+
+const GROUPS: Group[] = [
+  { id: '1', name: 'Sales Team', agentCount: 12, status: 'active' },
+  { id: '2', name: 'Support Team', agentCount: 8, status: 'active' },
+  { id: '3', name: 'Marketing Team', agentCount: 5, status: 'active' },
+  { id: '4', name: 'Customer Success', agentCount: 6, status: 'active' },
+  { id: '5', name: 'Technical Team', agentCount: 4, status: 'inactive' }
 ];
 
 // Helper function to get user's timezone
@@ -227,6 +249,9 @@ export const EditCampaignModal: React.FC<EditCampaignModalProps> = ({
   const [selectedTimezone, setSelectedTimezone] = useState<string>(getUserTimezone());
   const [isTimezoneDropdownOpen, setIsTimezoneDropdownOpen] = useState(false);
   const [isPhoneNumberDropdownOpen, setIsPhoneNumberDropdownOpen] = useState(false);
+  const [isGroupDropdownOpen, setIsGroupDropdownOpen] = useState(false);
+  const [isAdvancedConfigExpanded, setIsAdvancedConfigExpanded] = useState(false);
+  const [isAdvancedConcurrencyEnabled, setIsAdvancedConcurrencyEnabled] = useState(false);
 
   // Initialize form data when campaign prop changes
   useEffect(() => {
@@ -244,9 +269,16 @@ export const EditCampaignModal: React.FC<EditCampaignModalProps> = ({
         timezone: campaign.timezone || getUserTimezone(),
         maxTries: campaign.maxTries || 1,
         retryInterval: campaign.retryInterval || '00:00:00',
-        concurrency: campaign.concurrency || 1
+        concurrency: campaign.concurrency || 1,
+        groupName: campaign.groupName || '',
+        concurrentCallsPerAgent: campaign.concurrentCallsPerAgent || 1
       });
       setSelectedTimezone(campaign.timezone || getUserTimezone());
+      
+      // Set advanced config state based on existing campaign data
+      const hasAdvancedConfig = campaign.groupName && campaign.concurrentCallsPerAgent;
+      setIsAdvancedConfigExpanded(!!hasAdvancedConfig);
+      setIsAdvancedConcurrencyEnabled(!!hasAdvancedConfig);
     }
   }, [campaign, isOpen]);
 
@@ -293,6 +325,19 @@ export const EditCampaignModal: React.FC<EditCampaignModalProps> = ({
     const timeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/;
     if (!timeRegex.test(formData.retryInterval)) {
       newErrors.retryInterval = 'Invalid time format. Use HH:MM:SS (00:00:00 to 23:59:59)';
+    }
+
+    // Validate Advanced Configurations when enabled
+    if (isAdvancedConfigExpanded && isAdvancedConcurrencyEnabled) {
+      if (!formData.groupName?.trim()) {
+        newErrors.groupName = 'Group Name is required when auto-scaling is enabled';
+      }
+
+      if (!formData.concurrentCallsPerAgent || 
+          formData.concurrentCallsPerAgent < 1 || 
+          formData.concurrentCallsPerAgent > 100) {
+        newErrors.concurrentCallsPerAgent = 'Concurrent Calls per Online Agent must be between 1 and 100';
+      }
     }
 
     const hasEnabledDays = Object.values(formData.schedule).some(day => day.enabled);
@@ -360,8 +405,50 @@ export const EditCampaignModal: React.FC<EditCampaignModalProps> = ({
     setIsPhoneNumberDropdownOpen(false);
   };
 
+  const handleGroupSelect = (groupId: string) => {
+    setFormData(prev => ({ ...prev, groupName: groupId }));
+    setIsGroupDropdownOpen(false);
+  };
+
+  const toggleAdvancedConfig = () => {
+    setIsAdvancedConfigExpanded(prev => {
+      const newExpanded = !prev;
+      
+      // When toggling ON: enable advanced concurrency and set concurrency to 0
+      if (newExpanded) {
+        setIsAdvancedConcurrencyEnabled(true);
+        setFormData(prev => ({ ...prev, concurrency: 0 }));
+      } else {
+        // When toggling OFF: disable advanced concurrency and reset values
+        setIsAdvancedConcurrencyEnabled(false);
+        setFormData(prev => ({ 
+          ...prev, 
+          concurrency: 1,
+          groupName: '',
+          concurrentCallsPerAgent: 1
+        }));
+      }
+      
+      return newExpanded;
+    });
+  };
+
   // Get selected phone number
   const selectedPhoneNumber = PHONE_NUMBERS.find(phone => phone.id === formData.phoneNumber);
+
+  // Get selected group
+  const selectedGroup = GROUPS.find(group => group.id === formData.groupName);
+  const activeGroups = GROUPS.filter(group => group.status === 'active');
+
+  // Effect to handle concurrency field behavior when advanced settings are enabled
+  useEffect(() => {
+    if (isAdvancedConcurrencyEnabled && isAdvancedConfigExpanded) {
+      // Set concurrency to 0 when advanced settings are ON
+      if (formData.concurrency !== 0) {
+        setFormData(prev => ({ ...prev, concurrency: 0 }));
+      }
+    }
+  }, [isAdvancedConcurrencyEnabled, isAdvancedConfigExpanded, formData.concurrency]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -372,6 +459,9 @@ export const EditCampaignModal: React.FC<EditCampaignModalProps> = ({
       }
       if (!target.closest('.phone-number-dropdown-container')) {
         setIsPhoneNumberDropdownOpen(false);
+      }
+      if (!target.closest('.group-dropdown-container')) {
+        setIsGroupDropdownOpen(false);
       }
     };
 
@@ -773,17 +863,33 @@ export const EditCampaignModal: React.FC<EditCampaignModalProps> = ({
                   <input
                     id="concurrency"
                     type="number"
-                    min="1"
+                    min="0"
                     max="100"
                     value={formData.concurrency}
-                    onChange={(e) => setFormData(prev => ({ ...prev, concurrency: parseInt(e.target.value) || 1 }))}
-                    className="form-input h-12"
+                    onChange={(e) => {
+                      // Only allow changes if advanced concurrency is not enabled
+                      if (!isAdvancedConcurrencyEnabled) {
+                        setFormData(prev => ({ ...prev, concurrency: parseInt(e.target.value) || 0 }));
+                      }
+                    }}
+                    className={`form-input h-12 ${
+                      isAdvancedConcurrencyEnabled 
+                        ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                        : ''
+                    }`}
+                    disabled={isAdvancedConcurrencyEnabled}
                     aria-describedby={errors.concurrency ? "concurrency-error" : undefined}
                   />
                   {errors.concurrency && <p id="concurrency-error" className="text-red-500 text-sm mt-1">{errors.concurrency}</p>}
-                  <p className="text-xs text-gray-500 mt-1">
-                    Maximum simultaneous calls
-                  </p>
+                  {isAdvancedConcurrencyEnabled ? (
+                    <p className="text-xs text-amber-600 mt-1">
+                      Manual concurrency is disabled when the Automatic Concurrency Setting is enabled
+                    </p>
+                  ) : (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Number of simultaneous outbound calls
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -821,6 +927,184 @@ export const EditCampaignModal: React.FC<EditCampaignModalProps> = ({
                     required
                   />
                 </div>
+              </div>
+
+              {/* Advanced Configurations Section */}
+              <div className="border border-gray-200 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Settings className="w-5 h-5 text-gray-600" />
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900">
+                        Automatic Concurrency Settings <span className="text-gray-500 font-normal">(optional)</span>
+                      </h4>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Automate the number of concurrent outbound calls based on the count of available agents.<br/> </p>  <p className="text-xs text-blue-600 mt-1">  <a href="https://maqsam.com/">Click here to learn more about how it works! </a>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Toggle Button */}
+                  {!formData.ivr ? (
+                    <div className="relative group">
+                      <button
+                        type="button"
+                        className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 cursor-not-allowed opacity-50 transition-colors duration-200 ease-in-out focus:outline-none"
+                        disabled={true}
+                        role="switch"
+                        aria-checked={false}
+                        aria-label="Select an IVR to enable concurrency auto-scaling"
+                      >
+                        <span className="inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out translate-x-1" />
+                      </button>
+                      
+                      {/* Tooltip */}
+                      <div className="absolute w-60 bottom-full left-1/2 transform -translate-x-[calc(75%+1px)] mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-normal break-words z-10">
+                       <b> IVR selection required:</b> Please select an IVR with a <b>configured group </b> assignment to enable the automatic concurrency settings.
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={toggleAdvancedConfig}
+                      className={`
+                        relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                        ${isAdvancedConfigExpanded ? 'bg-blue-600' : 'bg-gray-300'}
+                      `}
+                      role="switch"
+                      aria-checked={isAdvancedConfigExpanded}
+                      aria-label="Toggle concurrency auto-scaling"
+                    >
+                      <span
+                        className={`
+                          inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out
+                          ${isAdvancedConfigExpanded ? 'translate-x-6' : 'translate-x-1'}
+                        `}
+                      />
+                    </button>
+                  )}
+                </div>
+                
+                {isAdvancedConfigExpanded && formData.ivr && (
+                  <div className="px-6 pb-6 border-t border-gray-200 bg-gray-50">
+                    <div className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Group Name Selection */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <div className="flex items-center">
+                            Group Name
+                            <div className="relative ml-2 group">
+                              <Info className="w-4 h-4 text-gray-400 cursor-help" />
+                              <div className="absolute w-60 bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-normal break-words z-10">
+                                Select the agent group for which the outbound concurrency will be automatically calculated based on the number of its online agents.
+                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </label>
+                        <div className="relative group-dropdown-container">
+                          <button
+                            type="button"
+                            onClick={() => setIsGroupDropdownOpen(!isGroupDropdownOpen)}
+                            className={`w-full form-input text-left flex items-center justify-between ${
+                              errors.groupName ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                            }`}
+                          >
+                            <span className={selectedGroup ? 'text-gray-900' : 'text-gray-400'}>
+                              {selectedGroup ? (
+                                <div className="flex items-center justify-between w-full">
+                                  <span className="font-medium">{selectedGroup.name}</span>
+                                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                    {selectedGroup.agentCount} agents
+                                  </span>
+                                </div>
+                              ) : (
+                                'Select group'
+                              )}
+                            </span>
+                            {isGroupDropdownOpen ? (
+                              <ChevronUp className="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" />
+                            )}
+                          </button>
+
+                          {isGroupDropdownOpen && (
+                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                              <button
+                                type="button"
+                                onClick={() => handleGroupSelect('')}
+                                className="w-full px-4 py-3 text-left hover:bg-gray-50 text-gray-500 border-b border-gray-100 transition-colors duration-200"
+                              >
+                                No group selected
+                              </button>
+                              {activeGroups.map((group, index) => {
+                                const isSelected = formData.groupName === group.id;
+                                const isLast = index === activeGroups.length - 1;
+                                const buttonClasses = `w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center justify-between transition-colors duration-200 ${
+                                  !isLast ? 'border-b border-gray-100' : ''
+                                } ${
+                                  isSelected ? 'bg-blue-50 text-blue-700' : ''
+                                }`;
+
+                                return (
+                                  <button
+                                    key={group.id}
+                                    type="button"
+                                    onClick={() => handleGroupSelect(group.id)}
+                                    className={buttonClasses}
+                                  >
+                                    <div>
+                                      <div className="font-medium">{group.name}</div>
+                                      <div className="text-xs text-gray-500">
+                                        {group.agentCount} agents
+                                      </div>
+                                    </div>
+                                    {isSelected && (
+                                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                        {errors.groupName && <p className="text-red-500 text-sm mt-1">{errors.groupName}</p>}
+                        <p className="text-xs text-gray-500 mt-1">
+                          Select one of the predefined groups from the selected IVR
+                        </p>
+                      </div>
+
+                      {/* Concurrent Calls per Online Agent */}
+                      <div>
+                        <label htmlFor="concurrent-calls-per-agent" className="block text-sm font-medium text-gray-700 mb-2">
+                          Concurrent Calls per Available Agent
+                        </label>
+                        <input
+                          id="concurrent-calls-per-agent"
+                          type="number"
+                          min="1"
+                          max="50"
+                          value={formData.concurrentCallsPerAgent}
+                          onChange={(e) => setFormData(prev => ({ ...prev, concurrentCallsPerAgent: parseInt(e.target.value) || 1 }))}
+                          className={`form-input h-12 ${
+                            errors.concurrentCallsPerAgent ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                          }`}
+                          aria-describedby={errors.concurrentCallsPerAgent ? "concurrent-calls-per-agent-error" : undefined}
+                        />
+                        {errors.concurrentCallsPerAgent && (
+                          <p id="concurrent-calls-per-agent-error" className="text-red-500 text-sm mt-1">
+                            {errors.concurrentCallsPerAgent}
+                          </p>
+                        )}
+                        <p className="text-xs text-gray-500 mt-1">
+                          
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
