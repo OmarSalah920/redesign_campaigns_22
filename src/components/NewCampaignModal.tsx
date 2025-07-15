@@ -538,16 +538,6 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
   }, [hasAttemptedSubmit, errors]);
 
   const handleScheduleChange = useCallback((dayKey: string, field: keyof ScheduleDay, value: boolean | string) => {
-    // Always return all weekdays regardless of date range
-    return WEEKDAYS;
-    if (hasAttemptedSubmit && errors[field]) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
-    
     setFormData(prev => ({
       ...prev,
       schedule: {
@@ -653,6 +643,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
           };
         }, {})
       }));
+    }
   }, [formData.startDate, formData.endDate]);
 
   useEffect(() => {
