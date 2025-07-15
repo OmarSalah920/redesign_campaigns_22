@@ -516,6 +516,9 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
         delete newErrors[field];
         return newErrors;
       });
+    });
+    
+    setFormData(prev => ({
       ...prev,
       schedule: {
         ...prev.schedule,
