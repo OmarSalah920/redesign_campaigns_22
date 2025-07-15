@@ -652,6 +652,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
             }
           };
         }, {})
+      }));
   }, [formData.startDate, formData.endDate]);
 
   useEffect(() => {
