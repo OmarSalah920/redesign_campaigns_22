@@ -1207,50 +1207,6 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                     </label>
                     
                     <div className="bg-gray-50 rounded-lg border border-gray-200 p-6">
-                      {/* Date Range Info */}
-                      {formData.startDate && (
-                        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                          <div className="flex items-start space-x-2">
-                            <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                            <div className="text-sm text-blue-800">
-                              <p className="font-medium mb-1">Weekdays filtered for selected date range</p>
-                              <p className="text-blue-700">
-                                Campaign runs from{' '}
-                                <span className="font-medium">
-                                  {new Date(formData.startDate + 'T00:00:00').toLocaleDateString('en-US', {
-                                    weekday: 'long',
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric'
-                                  })}
-                                </span>
-                                {formData.endDate ? (
-                                  <>
-                                    {' '}to{' '}
-                                    <span className="font-medium">
-                                      {new Date(formData.endDate + 'T00:00:00').toLocaleDateString('en-US', {
-                                        weekday: 'long',
-                                        month: 'short',
-                                        day: 'numeric',
-                                        year: 'numeric'
-                                      })}
-                                    </span>
-                                  </>
-                                ) : (
-                                  <span className="text-blue-600"> (no end date specified)</span>
-                                )}
-                              </p>
-                              <p className="text-xs text-blue-600 mt-1">
-                                {formData.endDate 
-                                  ? 'Only weekdays that occur within this range are shown below.'
-                                  : 'All weekdays are available since no end date is specified.'
-                                }
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
                       <div className="space-y-4">
                         {WEEKDAYS.map(day => {
                           const isDayInDateRange = formData.startDate && formData.endDate 
