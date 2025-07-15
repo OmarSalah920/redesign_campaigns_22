@@ -508,35 +508,14 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
           
           if (startTime >= endTime) {
             newErrors[`schedule-${dayKey}`] = 'End time must be after start time';
-          }
-        }
-      });
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, [formData, isAdvancedConfigExpanded]);
-
-  const validateForm = useCallback((): boolean => {
-    return validateStep(1) && validateStep(2);
-  }, [validateStep]);
-
-  // Event handlers
-  const handleFormDataChange = useCallback((field: keyof FormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
-    // Clear related errors
+    // Always return all weekdays regardless of date range
+    return WEEKDAYS;
     if (hasAttemptedSubmit && errors[field]) {
       setErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[field];
         return newErrors;
       });
-    }
-  }, [hasAttemptedSubmit, errors]);
-
-  const handleScheduleChange = useCallback((dayKey: string, field: keyof ScheduleDay, value: boolean | string) => {
-    setFormData(prev => ({
       ...prev,
       schedule: {
         ...prev.schedule,
@@ -640,17 +619,6 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
             }
           };
         }, {})
-      }));
-    } else {
-      // Reset schedule when dates are cleared
-      setFormData(prev => ({
-        ...prev,
-        schedule: WEEKDAYS.reduce((acc, day) => ({
-          ...acc,
-          [day.key]: { enabled: false, startTime: '09:00', endTime: '17:00' }
-        }), {})
-      }));
-    }
   }, [formData.startDate, formData.endDate]);
 
   useEffect(() => {
