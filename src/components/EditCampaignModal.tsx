@@ -1,6 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Calendar, Clock, Phone, Globe, ChevronDown, ChevronUp, Info, Workflow, Settings } from 'lucide-react';
 import { TimePicker } from './TimePicker';
+import { DatePicker } from './DatePicker';
+
+// Helper function to get today's date in YYYY-MM-DD format
+const getTodayDate = (): string => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = (today.getMonth() + 1).toString().padStart(2, '0');
+  const day = today.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+// Helper function to add one year to a date
+const addOneYear = (dateString: string): string => {
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString + 'T00:00:00');
+    date.setFullYear(date.getFullYear() + 1);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  } catch {
+    return '';
+  }
+};
 
 interface Campaign {
   id: string;
@@ -324,6 +349,18 @@ export const EditCampaignModal: React.FC<EditCampaignModalProps> = ({
     const timeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/;
     if (!timeRegex.test(formData.retryInterval)) {
       newErrors.retryInterval = 'Invalid time format. Use HH:MM:SS (00:00:00 to 23:59:59)';
+    }
+
+    // Validate end date if provided
+    if (formData.endDate && formData.startDate) {
+      if (formData.endDate <= formData.startDate) {
+        newErrors.endDate = 'End date must be after start date';
+      } else {
+        const maxEndDate = addOneYear(formData.startDate);
+        if (formData.endDate > maxEndDate) {
+          newErrors.endDate = 'Campaign duration cannot exceed 1 year';
+        }
+      }
     }
 
     // Validate Advanced Configurations when enabled
@@ -684,15 +721,15 @@ export const EditCampaignModal: React.FC<EditCampaignModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    End Date
-                  </label>
-                  <div className="w-full px-4 py-3 text-base border border-gray-200 rounded-lg bg-gray-50 text-gray-600">
-                    {formatDateForDisplay(formData.endDate)}
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Campaign end date cannot be modified
-                  </p>
+                  <DatePicker
+                    value={formData.endDate || ''}
+                    onChange={(value) => setFormData(prev => ({ ...prev, endDate: value }))}
+                    label="End Date"
+                    error={errors.endDate}
+                    helperText="Campaign will end on this date (optional)"
+                    minDate={formData.startDate || getTodayDate()}
+                    maxDate={formData.startDate ? addOneYear(formData.startDate) : undefined}
+                  />
                 </div>
               </div>
 
