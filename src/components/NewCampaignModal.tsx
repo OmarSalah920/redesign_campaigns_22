@@ -508,6 +508,36 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
           
           if (startTime >= endTime) {
             newErrors[`schedule-${dayKey}`] = 'End time must be after start time';
+          }
+        }
+      });
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }, [formData]);
+
+  const validateForm = useCallback((): boolean => {
+    return validateStep(1) && validateStep(2);
+  }, [validateStep]);
+
+  // Memoized handlers
+  const handleFormDataChange = useCallback((field: keyof FormData, value: any) => {
+    if (hasAttemptedSubmit && errors[field]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+    
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, [hasAttemptedSubmit, errors]);
+
+  const handleScheduleChange = useCallback((dayKey: string, field: keyof ScheduleDay, value: boolean | string) => {
     // Always return all weekdays regardless of date range
     return WEEKDAYS;
     if (hasAttemptedSubmit && errors[field]) {
@@ -516,7 +546,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
         delete newErrors[field];
         return newErrors;
       });
-    });
+    }
     
     setFormData(prev => ({
       ...prev,
@@ -537,7 +567,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
         return newErrors;
       });
     }
-  }, [errors]);
+  }, [hasAttemptedSubmit, errors]);
 
   const handleTimezoneSelect = useCallback((timezone: string) => {
     setSelectedTimezone(timezone);
