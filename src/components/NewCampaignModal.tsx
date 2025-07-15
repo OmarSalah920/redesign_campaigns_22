@@ -208,33 +208,6 @@ const addOneYear = (dateString: string): string => {
   }
 };
 
-const getDaysInDateRange = (startDate: string, endDate: string): Set<number> => {
-  if (!startDate || !endDate) return new Set();
-  
-  try {
-    const start = new Date(startDate + 'T00:00:00');
-    const end = new Date(endDate + 'T00:00:00');
-    const daysInRange = new Set<number>();
-    
-    const currentDate = new Date(start);
-    while (currentDate <= end) {
-      daysInRange.add(currentDate.getDay());
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    
-    return daysInRange;
-  } catch {
-    return new Set();
-  }
-};
-// Helper function to get filtered weekdays that exist within the date range
-const getFilteredWeekdays = (startDate: string, endDate: string) => {
-  if (!startDate || !endDate) return WEEKDAYS;
-  
-  const daysInRange = getDaysInDateRange(startDate, endDate);
-  return WEEKDAYS.filter(day => daysInRange.has(day.dayIndex));
-};
-
 // Memoized TimeSlotInput component
 const TimeSlotInput = React.memo<{
   dayKey: string;
@@ -624,28 +597,6 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
     }
   }, [isAdvancedConcurrencyEnabled, isAdvancedConfigExpanded, formData.concurrency, handleFormDataChange]);
   // Effects
-  useEffect(() => {
-    if (formData.startDate) {
-      // If end date is not provided, use start date + 1 year for schedule calculation
-      const endDateForCalculation = formData.endDate || addOneYear(formData.startDate);
-      const daysInRange = getDaysInDateRange(formData.startDate, formData.endDate);
-      
-      setFormData(prev => ({
-        ...prev,
-        schedule: WEEKDAYS.reduce((acc, day) => {
-          const shouldBeEnabled = daysInRange.has(day.dayIndex);
-          return {
-            ...acc,
-            [day.key]: {
-              ...prev.schedule[day.key],
-              enabled: shouldBeEnabled
-            }
-          };
-        }, {})
-      }));
-    }
-  }, [formData.startDate, formData.endDate]);
-
   useEffect(() => {
     const updateTimes = () => {
       const times: Record<string, string> = {};
@@ -1208,14 +1159,7 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                     
                     <div className="bg-gray-50 rounded-lg border border-gray-200 p-6">
                       <div className="space-y-4">
-                        {WEEKDAYS.map(day => {
-                          const isDayInDateRange = formData.startDate && formData.endDate 
-                            ? getDaysInDateRange(formData.startDate, formData.endDate).has(day.dayIndex)
-                            : true;
-                          
-                          if (!isDayInDateRange) return null;
-                          
-                          return (
+                        {WEEKDAYS.map(day => (
                             <div key={day.key} className="space-y-2">
                               <div className="flex items-center justify-between">
                                 {/* Day name and checkbox */}
@@ -1268,55 +1212,14 @@ export const NewCampaignModal: React.FC<NewCampaignModalProps> = ({
                                 <p className="text-red-500 text-xs ml-7">{getError(`schedule-${day.key}`)}</p>
                               )}
                             </div>
-                          );
-                        })}
+                        ))}
                       </div>
-                      
-                      {/* Show message when no days are available */}
-                      {(() => {
-                        // When no end date is specified, show all weekdays
-                        const filteredWeekdays = formData.startDate 
-                          ? (formData.endDate ? getFilteredWeekdays(formData.startDate, formData.endDate) : WEEKDAYS)
-                          : [];
-                        
-                        if (filteredWeekdays.length === 0) {
-                          return (
-                            <div className="text-center py-4 mt-4 border-t border-gray-200">
-                              <div className="flex flex-col items-center space-y-3">
-                                <Calendar className="w-12 h-12 text-gray-400" />
-                                <div className="text-gray-600">
-                                  <p className="font-medium">
-                                    {formData.startDate 
-                                      ? 'No weekdays available'
-                                      : 'Select campaign dates'
-                                    }
-                                  </p>
-                                  <p className="text-sm text-gray-500 mt-1">
-                                    {formData.startDate 
-                                      ? 'The selected date range does not contain any complete weekdays. Please adjust your dates.'
-                                      : 'Choose a start date above to configure your weekly schedule.'
-                                    }
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        }
-                        
-                        return null;
-                      })()}
                     
                     {getError('schedule') && <p className="text-red-500 text-sm">{getError('schedule')}</p>}
                     <div className="flex items-start space-x-2">
                       <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
                       <p className="text-xs text-gray-600">
-                        {formData.startDate ? (
-                          formData.endDate 
-                            ? 'Only weekdays that occur within your selected campaign date range are displayed. You can customize the time slots for each available day.'
-                            : 'All weekdays are available since no end date is specified. You can customize the time slots for each day.'
-                        ) : (
-                          'Select a campaign start date above to see available weekdays. You can then customize the time slots for each day.'
-                        )}
+                        Customize the time slots for each day when the campaign should be active.
                       </p>
                     </div>
                   </div>
